@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dist/bootstrap.min.css') }}" \> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" \>
+    
+    <title>Videos list</title>
+</head>
+<body>
+    <div class="header-wr">
+        <a href="{{ url_for('index') }}"><h3>Videos list</h3></a>
+    </div>
+
+    <div class="video-items-filters-wr">
+        <form class="page-filtering-params-form" action="{{ url_for('index') }}" method="get" name="page-filtering-params">
+            <label>Video status:
+                <select name="video-status">
+                    <option value="all" {% if page_vars.page_filtering_params['video_status'] == 'all' %} selected="true" {% endif %}>All</option>
+                    {% for status_id, status_name in page_vars.lookup_video_status.items() %}
+                    <option value="{{ status_name }}" {% if page_vars.page_filtering_params['video_status'] == status_name %} selected="true" {% endif %}>{{ status_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Video type:
+                <select name="video-type">
+                    <option value="all" {% if page_vars.page_filtering_params['video_type'] == 'all' %} selected="true" {% endif %}>All</option>
+                    {% for type_id, type_name in page_vars.lookup_video_type.items() %}
+                    <option value="{{ type_name }}" {% if page_vars.page_filtering_params['video_type'] == type_name %} selected="true" {% endif %}>{{ type_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Scrapper target type:
+                <select name="target-type">
+                    <option value="all" {% if page_vars.page_filtering_params['target_type'] == 'all' %} selected="true" {% endif %}>All</option>
+                    {% for type_id, type_name in page_vars.lookup_target_type.items() %}
+                    <option value="{{ type_name }}" {% if page_vars.page_filtering_params['target_type'] == type_name %} selected="true" {% endif %}>{{ type_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Provider:
+                <select name="video-provider">
+                    <option value="all" {% if page_vars.page_filtering_params['video_provider'] == 'all' %} selected="true" {% endif %}>All</option>
+                    {% for provider_id, provider_info in page_vars.lookup_provider.items() %}
+                    <option value="{{ provider_info.short_name }}" {% if page_vars.page_filtering_params['video_provider'] == provider_info.short_name %} selected="true" {% endif %}>{{ provider_info.short_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Channel:
+                <input type="text" name="video-channel-name" value="{{ page_vars.page_filtering_params['video_channel_name'] }}" \>
+            </label>
+
+            <label>Title:
+                <input type="text" name="video-title" value="{{ page_vars.page_filtering_params['video_title'] }}" \>
+            </label>
+
+            <div class="video-items-filters-sort-wr">
+                <label>Order by:
+                    <select name="sort-by">
+                        <option value="created_at" {% if page_vars.page_filtering_params['sort_by'] == 'created_at' %} selected="true" {% endif %}>Created at</option>
+                        <option value="uploaded_at" {% if page_vars.page_filtering_params['sort_by'] == 'uploaded_at' %} selected="true" {% endif %}>Uploaded at</option>
+                        <option value="channel_name" {% if page_vars.page_filtering_params['sort_by'] == 'channel_name' %} selected="true" {% endif %}>Channel name</option>
+                        <option value="channel_id" {% if page_vars.page_filtering_params['sort_by'] == 'channel_id' %} selected="true" {% endif %}>Channel id</option>
+                        <option value="title" {% if page_vars.page_filtering_params['sort_by'] == 'title' %} selected="true" {% endif %}>Title</option>
+                        <option value="orig_title" {% if page_vars.page_filtering_params['sort_by'] == 'orig_title' %} selected="true" {% endif %}>Orig title</option>
+                    </select>
+                    <select name="sort-order">
+                        <option value="ASC" {% if page_vars.page_filtering_params['sort_order'] == 'ASC' %} selected="true" {% endif %}>ASC</option>
+                        <option value="DESC" {% if page_vars.page_filtering_params['sort_order'] == 'DESC' %} selected="true" {% endif %}>DESC</option>
+                    </select>
+                </label>
+    
+                <input type="hidden" class="pagination-value-input" name="page" value="1" \>
+                <button type="submit" class="video-items-filters-submit btn btn-primary">Filter</button>
+            </div>
+        </form>
+
+        <div class="show-all-categories-wr">
+            <label class="show-all-categories-label">
+                show categories
+                <input id="show-all-categories-checkbox" type="checkbox">
+            </label>
+        </div>
+    </div>
+
+    <div class="main-content-wr">
+        <div class="videos-list-wr">
+            {% for video_item in page_vars.video_items.items %}
+            <div id="video-{{ video_item.video_id }}" class="video-wr" data-initial-status_id="{{ video_item.video_status_id }}">
+                
+                <div class="video-preview-wr">
+                    {% if video_item | get_embed_type != 'html_insert' %} 
+                    <a href="javascript:void(0)" class="toggle-video-embed-enlarge toggle-video-embed-enlarge-vertical" data-video-item-id="{{ video_item.video_id }}" data-aspect="vertical">||</a>
+                    <a href="javascript:void(0)" class="toggle-video-embed-enlarge toggle-video-embed-enlarge-horizontal" data-video-item-id="{{ video_item.video_id }}" data-aspect="horizontal">##</a>
+                    {% endif %}
+
+                    <a href="javascript:void(0)" class="toggle-video-embed-enlarge toggle-video-embed-close-video" data-video-item-id="{{ video_item.video_id }}">close</a>
+                 
+                    <img class="video-preview-img {% if video_item | get_embed_type == 'html_insert' %} video-preview-img-vertical {% endif %}" src="{{ url_for('static', filename='img/video_preview/' + video_item.provider_id | string + '-' + video_item.provider_video_id + video_item | get_preview_img_extension) }}" data-video-item-id="{{ video_item.video_id }}" \>
+                    {% if video_item | get_embed_type == 'html_insert' %}
+                    <div class="video-embed-wr insert-html-wr d-none" data-embed-block-html='{{ video_item.embed_url }}'>
+                        
+                    </div>
+                    {% else %} 
+                    <iframe src="" data-src="{{ video_item.embed_url }}" title="{{ video_item.title }}" class="video-embed-wr d-none" data-video-item-id="{{ video_item.video_id }}" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" allowfullscreen></iframe>
+                    {% endif %}
+                </div>
+                <div class="video-main-info-wr">
+                    <div class="video-id-wr">#{{ video_item.video_id }}</div>
+                    <a href="{{ video_item.url }}" target="_blank" class="video-page-link"  title="{{ video_item.url }}">{{ video_item.provider_video_id }}</a>
+                    
+                    <div class="channel-details-wr">
+                        <a href="javascript:void(0)" class="channel-details-btn" title="{{ video_item.channel_id }}">channel</a>
+                        
+                        <div class="channel-details-popup-wr d-none">
+                            <div><a href="{{ video_item | format_channel_url }}" class="video-page-link" target="_blank" title="{{ video_item.channel_id }}">link</a></div>
+                            <div><a href="javascript:void(0)" class="add-channel-target-btn" data-channel-id="{{ video_item.channel_id }}" data-channel-name="{{ video_item.channel_name }}" data-provider-id="{{ video_item.provider_id }}" data-video-type-id="{{ video_item.video_type_id }}" data-video-item-id="{{ video_item.video_id }}">add target</a></div>
+                            <div><a href="javascript:void(0)" class="ignore-channel-btn" data-channel-id="{{ video_item.channel_id }}" data-provider-id="{{ video_item.provider_id }}" data-video-item-id="{{ video_item.video_id }}">ignore channel</a></div>
+                        </div>
+                    </div>
+
+                    <p>{{ page_vars.lookup_provider[video_item.provider_id].short_name }}</p>
+                    <p>{{ page_vars.lookup_video_type[video_item.video_type_id] }}</p>
+                </div>
+
+                <div class="video-main-info-wr video-channel-info-wr">
+                    <p>{{ video_item.channel_name }}</p>
+                    <p>{{ video_item.channel_id }}</p>
+                </div>
+
+                <p class="video-main-info-title">{{ video_item.orig_title }}</p>
+                <p><input class="video-title-input" type="text" value="{{ video_item.title }}"></p>
+
+                <div class="video-attrs-wr">
+                    <div class="video-status-wr">
+                        <select class="video-item-status">
+                            {% for status_id, status_name in page_vars.lookup_video_status.items() %}
+                            <option value="{{ status_id }}" {% if video_item.video_status_id == status_id %} selected="true" {% endif %}>{{ status_name }}</option>
+                            {% endfor %}
+                        </select>
+        
+                        <label>
+                            <input class="video-editor-pick" type="checkbox" name="video_editor_pick"
+                                {% if video_item.editors_pick == True %} checked="true" {% endif %} \>
+                            <span>Editor pick</span>
+                        </label>
+                    </div>
+
+                    <div class="video-categories-main-wr">
+                        <div id="video-categories-heading-{{ video_item.video_id }}">
+                            <button class="video-categories-btn btn btn-link" data-bs-toggle="collapse" data-bs-target="#video-categories-collapsable-{{ video_item.video_id }}">
+                            categories
+                            </button>
+                        </div> 
+                    </div>
+
+                    <div id="video-categories-collapsable-{{ video_item.video_id }}" class="video-categories-collapsable-wr collapse">
+                        <div class="video-categories-wr">
+                        {% for category_id, category_name in page_vars.lookup_video_category.items() %}
+                        <label>
+                            <input class="video-category-input" type="checkbox" name="{{ category_id }}" 
+                                {% if category_id in video_item.category_ids %} checked="true" {% endif %}></input>
+                            <span>{{ category_name }}</span>
+                        </label>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="video-ignore-btn btn btn-secondary" data-video-item-id="{{ video_item.video_id }}">ignore</button>
+                    <button class="video-update-btn btn btn-primary" data-video-item-id="{{ video_item.video_id }}">update</button>
+                    <button class="video-approve-btn btn btn-success" data-video-item-id="{{ video_item.video_id }}">approve</button>
+                </div>
+
+                <div class="video-dates-wr">
+                    <p>
+                        <span>{{ video_item.created_at.strftime('%d-%m-%Y %H:%M:%S') }} created</span> // 
+                        <span class="video-date-uploaded-wr">
+                        {% if video_item.uploaded_at != None %} 
+                            {{ video_item.uploaded_at.strftime('%d-%m-%Y %H:%M:%S') }} 
+                            uploaded 
+                            <a href="javascript:void(0)" class="uploaded-time-clear" data-video-item-id="{{ video_item.video_id }}"">clear</a>
+                            <input type="checkbox" class="uploaded-time-clear-checkbox d-none" \>
+                        {% else %} 
+                            not uploaded
+                        {% endif %}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="pagination-wr">
+        <!-- Pagination Links -->
+        <div class="text-right">
+            <a href="javascript:void(0)" data-page-num="{{ page_vars.video_items.prev_num }}"
+            class="pagination-btn btn btn-outline-dark 
+            {% if page_vars.video_items.page == 1 %}disabled{% endif %}">
+                &laquo;
+            </a>
+            <!-- Loop through the number of pages to display a link for each-->
+            {% for page_num in page_vars.video_items.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                <!-- Check for the active page and set the link to "Active"-->
+                    <a href="javascript:void(0)" data-page-num="{{ page_num }}"
+                    class="pagination-btn btn {% if page_vars.video_items.page == page_num %} btn-dark {% else %} btn-outline-dark {% endif %}">
+                        {{ page_num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            <a href="javascript:void(0)" data-page-num="{{ page_vars.video_items.next_num }}"
+            class="pagination-btn btn btn-outline-dark 
+            {% if page_vars.video_items.page == page_vars.video_items.pages %} disabled {% endif %}">
+                &raquo;
+            </a>
+        </div>
+        <p class="text-right mt-3">Page {{ page_vars.video_items.page }} of {{ page_vars.video_items.pages }}</p>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/dist/jquery-3.6.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dist/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        $(window).on('load', function () {
+		    init();
+	    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+
+        {"name":"Python: run_webapp.py","type":"python","request":"launch","program":"run_webapp.py","console":"integratedTerminal","justMyCode":true},
+        {
+            "name": "run_webapp",
+            "type": "python",
+            "request": "launch",
+            "program": "run_webapp.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {"name":"Python: run_job_root.py","type":"python","request":"launch","program":"run_job_root.py","console":"integratedTerminal","justMyCode":true},
+        {
+            "name": "run_job_root",
+            "type": "python",
+            "request": "launch",
+            "program": "run_job_root.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {"name":"Python: run_job_targets_list.py","type":"python","request":"launch","program":"run_job_targets_list.py","console":"integratedTerminal","justMyCode":true},
+        {
+            "name": "run_job_targets_list",
+            "type": "python",
+            "request": "launch",
+            "program": "run_job_targets_list.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["1", "2"]
+        }
+    ]
+}

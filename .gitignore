@@ -1,0 +1,10 @@
+.git
+.env
+.env.prod
+
+.idea
+
+__pycache__
+*.pyc
+
+*.log

@@ -1,0 +1,67 @@
+version: "3.3"
+
+networks:
+  scrapper-external:
+    driver: bridge
+  scrapper-internal:
+    driver: bridge
+
+volumes:
+  certbot-etc: {}
+  db-data-scrapper: {}
+  scrapper-data: {}
+ 
+services:
+  prt-scrapper-postgres:
+    image: prt-scrapper-postgres
+    container_name: prt-scrapper-postgres
+    restart: unless-stopped
+    ports:
+      - 10039:5432
+    env_file: ../../prt_scrapper/.env.local
+    volumes:
+      - db-data-scrapper:/var/lib/postgres
+    networks:
+      - scrapper-internal
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+
+  prt-scrapper-engine:
+    image: prt-scrapper-engine
+    container_name: prt-scrapper-engine   
+    shm_size: '2gb'
+    depends_on:
+      - prt-scrapper-postgres
+    restart: unless-stopped
+    environment:
+      - PRT_ENV=prod
+    volumes:
+      - type: bind
+        source: /var/prt-scrapper-data
+        target: /var/prt-scrapper-data
+    networks:
+      - scrapper-internal
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+  nginx:
+    image: prt-scrapper-nginx
+    depends_on:
+      - prt-scrapper-engine
+    restart: unless-stopped
+    ports:
+      - 10339:80
+      # -443:443
+    networks:
+      - scrapper-external
+      - scrapper-internal
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
