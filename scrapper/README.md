@@ -44,7 +44,7 @@ INSERT INTO scrapper_data_target_parsing_code
 ```
 
 ## Build 
-###### expected Linux with Docker
+###### expected Linux (or WSL) with Docker
 `e.g. install by same script as used to setup remote server: private_retainer/scrapper/build/deployment/env-init-ubuntu.sh`
 
 ### prepare build/run env 
