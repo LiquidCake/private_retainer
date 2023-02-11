@@ -1,7 +1,7 @@
 # about
 
-this is a small containerized scrapper engine for loading embeddable videos lists from video hosting websites like `youtube` etc.  
-it periodically scraps configured list of channels or search queries and saves all found videos to DB
+this is a small containerized scrapper engine for creating embeddable videos lists from video hosting websites like `youtube` etc.  
+it periodically scraps configured list of channels or search queries and saves all found video links (!) to DB
 
 app has 2 parts:
 - scrapper engine: launches scrapper jobs, applies scrapping scripts to webpage and saves data to DB
