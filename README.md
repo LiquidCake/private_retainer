@@ -7,6 +7,10 @@ app has 2 parts:
 - scrapper engine: launches scrapper jobs, applies scrapping scripts to webpage and saves data to DB
 - scrapper admin webapp: shows scrapped videos from DB, allows to preview them, change statuses and mark videos for any further 'publishing'
 
+admin webapp:
+![2](https://user-images.githubusercontent.com/9273621/218230357-d444c6aa-f218-4bdc-84a1-040da93c520e.png)
+
+
 usage (e.g. for 'youtube'):
 - build, start containers (either locally or on remote server) - see _build_ section below
 - apply DB init scripts manually - `private_retainer/scrapper/db/init_db.sql` (DB creds are in .env file, see _build_ section below)
