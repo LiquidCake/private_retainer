@@ -33,8 +33,6 @@ WORKDIR /app
 
 USER prt-usr
 
-RUN source /app/.env
-
 RUN pip3 install -r /app/requirements.txt --no-cache-dir --user
 
 CMD ["./start_webapp.sh"]
