@@ -8,4 +8,5 @@ sudo apt update
 sudo apt install docker-ce
 sudo apt install docker-compose
 
+sudo systemctl enable docker
 sudo systemctl start docker
