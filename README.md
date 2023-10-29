@@ -14,7 +14,7 @@ admin webapp:
 usage (e.g. for 'youtube'):
 - build, start containers (either locally or on remote server) - see _build_ section below
 - apply DB init scripts manually - `private_retainer/scrapper/db/init_db.sql` (DB creds are in .env file, see _build_ section below)
-- copy scrapping scripts code from files at `private_retainer/scrapper/prt_scrapper/scrapper_job/db_persisted_scripts` to DB table `scrapper_data_target_parsing_code`
+- copy scrapping scripts code from files at `private_retainer/scrapper/prt_scrapper/scrapper_job/db_persisted_scripts` to DB table `scrapper_data_target_parsing_code` - see _Add/update scrapping scripts_ section below
 - create data targets (URL's) in DB table `scrapper_data_target` (see `example_targets.sql`), make sure to set `enabled = true`
 - check configs in DB table `configuration`
 - scrapper wil run once a day as configured in `private_retainer/scrapper/build/deployment/setup-cron-user.sh`
