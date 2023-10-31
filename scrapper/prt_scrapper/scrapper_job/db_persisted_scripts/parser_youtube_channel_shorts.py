@@ -57,16 +57,27 @@ def scrap_videos(driver, target, job_run_num, scrapping_worker_id, job_type):
     target_type_id, target_id, video_type_id, channel_id),\
     provider_id, scrapping_worker_id), job_run_num, job_type)
 
+    get_dom_attempt = 1
+
     #iterate infinity scroll till the end or condition
     while True:
-        #if this is updates-only run and latest scrapped video is already loaded 
-        if scrapper_script_run_type == SCRAPPER_SCRIPT_RUN_TYPE_UPDATES:
-            currently_loaded_video_blocks = find_all_video_blocks(driver)
-            
-            last_scrapped_block_already_loaded = len(list(filter(lambda vb: get_provider_video_id_from_video_block(vb)\
-                == target.last_scrapped_provider_video_id, currently_loaded_video_blocks))) > 0
-            if last_scrapped_block_already_loaded:
-                break
+        try:
+            #if this is updates-only run and latest scrapped video is already loaded - skip further scrolling
+            if scrapper_script_run_type == SCRAPPER_SCRIPT_RUN_TYPE_UPDATES:
+                currently_loaded_video_blocks = find_all_video_blocks(driver)
+                
+                last_scrapped_block_already_loaded = len(list(filter(lambda vb: get_provider_video_id_from_video_block(vb)\
+                    == target.last_scrapped_provider_video_id, currently_loaded_video_blocks))) > 0
+                
+                if last_scrapped_block_already_loaded:
+                    break
+        except:
+            #normally should not happen but sometimes it does, because of DOM loading issues
+            if get_dom_attempt <= INFINITE_SCROLL_MAX_LOAD_WAIT_ATTEMPTS:
+                get_dom_attempt += 1
+                continue
+            else:
+                raise Exception("too many failed attempts to get dom")
 
         time.sleep(1)
         new_video_blocks_loaded = infinite_scroll_next_chunk(driver, video_blocks_loaded)
