@@ -45,7 +45,7 @@ def scrap_and_store_data(provider_id, job_run_num, scrapping_worker_id, data_tar
                 #scrap data target
                 return_handle = {}
                 exec(parsing_code.parsing_code, {'call_function': 'scrap_videos', 'return_handle': return_handle,
-                    'web_driver': web_driver, 'target': target, 'job_run_num': job_run_num, 
+                    'web_driver': web_driver, 'target': target, 'job_run_num': job_run_num,
                     'scrapping_worker_id': scrapping_worker_id, 'job_type': job_type})
 
                 #DEBUG - comment above, uncomment below, comment/uncomment 2nd 'exec' statement in below try block.
@@ -111,7 +111,7 @@ def scrap_and_store_data(provider_id, job_run_num, scrapping_worker_id, data_tar
 
 def create_web_driver():
     options = Options()
-    #options.binary_location = FIREFIX_BINARY_LOCATION
+    #options.binary_location = FIREFOX_BINARY_LOCATION
     options.add_argument('--headless')
     
     current_dir = str(pathlib.Path(__file__).parent.resolve())
