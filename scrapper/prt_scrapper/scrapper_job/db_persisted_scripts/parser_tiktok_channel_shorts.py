@@ -6,6 +6,7 @@ import random
 import time
 import json
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 from scrapper_common.constants import *
 from scrapper_job.constants import *
@@ -26,7 +27,7 @@ SCRAPPER_URL_RETREIVE_HEADERS = {
 SCRAPPER_SCRIPT_RUN_TYPE_FULL_DELAY_SEC = 86400
 
 INFINITE_SCROLL_LOAD_WAIT_DELAY_SEC = 5
-INFINITE_SCROLL_MAX_LOAD_WAIT_ATTEMPTS = 20
+INFINITE_SCROLL_MAX_LOAD_WAIT_ATTEMPTS = 5
 
 INFINITE_SCROLL_MAX_LOADED_VIDEO_BLOCKS = 1000
 
@@ -49,6 +50,8 @@ def scrap_videos(driver, target, job_run_num, scrapping_worker_id, job_type):
     'run type: "{}", started page scrolling'.format(scrapper_script_run_type), 
     target_type_id, target_id, video_type_id, channel_id),\
     provider_id, scrapping_worker_id), job_run_num, job_type)
+
+    wait_for_initial_page_dom_population(driver, channel_id)
 
     #iterate infinity scroll till the end or condition
     while True:
@@ -93,7 +96,7 @@ def scrap_videos(driver, target, job_run_num, scrapping_worker_id, job_type):
     for video_block in video_parent_blocks:
         provider_video_id = get_provider_video_id_from_video_block(video_block, channel_id)
         
-        if not provider_video_id:
+        if not provider_video_id or not provider_video_id.isnumeric():
             raise Exception('failed to parse provider_video_id for video block with text "{}"'.format(video_block.text))
         
         video_url = VIDEO_URL_TEMPLATE.format(channel_id, provider_video_id)
@@ -116,7 +119,6 @@ def scrap_videos(driver, target, job_run_num, scrapping_worker_id, job_type):
 
             continue
 
-        #video_title = video_block.find_element(By.CSS_SELECTOR, 'div[data-e2e=user-post-item-desc]>a').get_attribute("title")
         video_title = video_embed_info_dict['title']
 
         if not video_title:
@@ -196,8 +198,24 @@ def infinite_scroll_next_chunk(driver, video_blocks_loaded):
     
     return video_blocks_loaded
 
+def wait_for_initial_page_dom_population(driver, channel_id):
+    initially_loaded_video_blocks = find_all_video_blocks(driver)
+
+    attempt = 1
+    while attempt <= INFINITE_SCROLL_MAX_LOAD_WAIT_ATTEMPTS:
+        try:
+            get_provider_video_id_from_video_block(initially_loaded_video_blocks[0], channel_id)
+
+            return
+        except NoSuchElementException as e:
+            attempt += 1
+            time.sleep(INFINITE_SCROLL_LOAD_WAIT_DELAY_SEC)
+    
+    raise Exception('page dom initial population didnt happen as expected after {} tries'
+                    .format(INFINITE_SCROLL_MAX_LOAD_WAIT_ATTEMPTS))
+
 def get_provider_video_id_from_video_block(video_block, channel_id):
-    local_video_link = video_block.find_element(By.CSS_SELECTOR, 'div[data-e2e=user-post-item]>div>div>a')\
+    local_video_link = video_block.find_element(By.XPATH, './/a[contains(@href, "/video/")]')\
         .get_attribute('href')
 
     return local_video_link.replace('https://www.tiktok.com/{}/video/'.format(channel_id), '')
