@@ -222,7 +222,7 @@ def is_shorts_video(local_video_link):
     return 'https://www.youtube.com/shorts/' in local_video_link
 
 def is_video_suppressed(video_title, suppressed_title_words):
-    title_words = ''.join([x for x in video_title if x in string.ascii_letters + ' ']).split()
+    title_words = ''.join([ch for ch in video_title if ch.isalpha() or ch == ' ']).split()
     
     for title_word in title_words:
         if title_word.lower() in map(str.lower, suppressed_title_words):
